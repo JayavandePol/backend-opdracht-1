@@ -1,49 +1,53 @@
-@vite(['resources/css/app.css', 'resources/js/app.js']);
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jamin</title>
-</head>
-<body>
-    <div class="container d-flex justify-content-center">
+@extends('layouts.app')
 
-        <div class="col-md-8">
-
-            <h2>{{ $title }}</h2>
+@section('content')
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">{{ $title }}</h1>
+                <a href="{{ route('allergeen.index') }}" class="btn btn-outline-secondary">Terug naar overzicht</a>
+            </div>
 
             @if ($errors->any())
                 <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $err)
-                            <li>{{ $err }}</li>
+                    <h2 class="h6 mb-2">Er ging iets mis</h2>
+                    <ul class="mb-0 ps-3">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
                         @endforeach
                     </ul>
                 </div>
             @endif
 
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="POST" action="{{ route('allergeen.update', $allergeen->Id) }}" novalidate>
+                        @csrf
+                        @method('PUT')
 
-            <form method="POST" action="{{ route('allergeen.update', $allergeen->Id) }}">
-                @csrf
-                @method('PUT')
+                        <div class="mb-3">
+                            <label for="InputName" class="form-label">Naam</label>
+                            <input name="naam" type="text" class="form-control @error('naam') is-invalid @enderror" id="InputName" value="{{ old('naam', $allergeen->Naam) }}" required>
+                            @error('naam')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                <div class="mb-3">
-                    <label for="InputName" class="form-label">Naam</label>
-                    <input name="naam" type="text" class="form-control" id="InputName" 
-                    aria-describedby="nameHelp" value="{{ old('naam', $allergeen->Naam) }}">
+                        <div class="mb-4">
+                            <label for="InputDescription" class="form-label">Omschrijving</label>
+                            <textarea name="omschrijving" class="form-control @error('omschrijving') is-invalid @enderror" id="InputDescription" rows="3" required>{{ old('omschrijving', $allergeen->Omschrijving) }}</textarea>
+                            @error('omschrijving')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Opslaan</button>
+                            <a href="{{ route('allergeen.index') }}" class="btn btn-secondary">Annuleren</a>
+                        </div>
+                    </form>
                 </div>
-                <div class="mb-3">
-                    <label for="InputDescription" class="form-label">Omschrijving</label>
-                    <input name="omschrijving" type="text" class="form-control" id="InputDescription" 
-                    aria-describedby="descriptionHelp" value="{{ old('omschrijving', $allergeen->Omschrijving) }}">
-                </div>   
-                
-                <button type="submit" class="btn btn-primary">Opslaan</button>
-                <a href="{{ route('allergeen.index') }}" class="btn btn-secondary">Annuleren</a>
-            </form>
-
+            </div>
         </div>
     </div>
-</body>
-</html>
+@endsection
