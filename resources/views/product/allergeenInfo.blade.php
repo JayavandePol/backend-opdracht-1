@@ -10,7 +10,27 @@
 	@endif
 </head>
 <body>
-	<div class="container py-5">
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container">
+			<a class="navbar-brand" href="{{ route('home') }}">Jamin Magazijn</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Navigatie wisselen">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="mainNavbar">
+				<ul class="navbar-nav me-auto">
+					<li class="nav-item">
+						<a class="nav-link {{ request()->routeIs('product.index') ? 'active' : '' }}" href="{{ route('product.index') }}">Overzicht Magazijn</a>
+					</li>
+				</ul>
+				<div class="d-flex gap-2">
+					<a class="btn btn-outline-light btn-sm" href="{{ route('home') }}">Home</a>
+					<a class="btn btn-outline-light btn-sm" href="{{ route('product.index') }}">Magazijn</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<main class="container py-5">
 		<div class="row justify-content-center">
 			<div class="col-lg-10">
 				<div class="d-flex justify-content-between align-items-center mb-4">
@@ -65,6 +85,12 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</main>
+
+	<footer class="bg-light border-top py-3 mt-auto">
+		<div class="container text-center">
+			<small class="text-muted">&copy; {{ now()->year }} Jamin Magazijn. Alle rechten voorbehouden.</small>
+		</div>
+	</footer>
 </body>
 </html>
