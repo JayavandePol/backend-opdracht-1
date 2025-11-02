@@ -10,6 +10,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         // Allergenen procedures
         DB::unprepared('DROP PROCEDURE IF EXISTS Sp_GetAllAllergenen');
         DB::unprepared(<<<'SQL'
@@ -164,6 +168,10 @@ SQL
      */
     public function down(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         DB::unprepared('DROP PROCEDURE IF EXISTS Sp_GetAllAllergenen');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_CreateAllergeen');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_DeleteAllergeen');
