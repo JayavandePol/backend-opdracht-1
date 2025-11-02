@@ -11,4 +11,14 @@ class ProductModel extends Model
     {
         return DB::select('CALL sp_GetAllProducts()');
     }
+
+    public function sp_GetLeverantieInfo(int $productId)
+    {
+        return DB::select('CALL sp_GetLeverantieInfo(:id)', ['id' => $productId]);
+    }
+
+    public function sp_GetLeverancierInfo(int $productId)
+    {
+        return DB::select('CALL sp_GetLeverancierInfo(:id)', ['id' => $productId]);
+    }
 }
