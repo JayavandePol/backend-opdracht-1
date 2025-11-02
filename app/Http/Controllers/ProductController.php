@@ -20,7 +20,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = $this->productModel->sp_GetAllProducts();
+        $products = collect($this->productModel->sp_GetAllProducts())
+            ->sortBy('Barcode')
+            ->values();
 
         return view('product.index', [
             'title' => 'Overzicht Magazijn Jamin',
@@ -35,10 +37,39 @@ class ProductController extends Controller
         ]);
     }
 
-     public function leverantieInfo()
+     public function leverantieInfo(int $id)
     {
+        $leverancierRows = $this->productModel->sp_GetLeverantieInfo($id);
+        $leveringenRows = $this->productModel->sp_GetLeverancierInfo($id);
+
+        if (empty($leverancierRows) && empty($leveringenRows)) {
+            return redirect()
+                ->route('product.index')
+                ->with('error', 'Leveringsinformatie voor dit product is niet gevonden.');
+        }
+
+        $leverancier = $leverancierRows[0] ?? null;
+        $leveringen = collect($leveringenRows)->sortBy('DatumLevering')->values();
+
+        $productNaam = $leveringen->first()->Naam ?? null;
+        $aantalAanwezig = (int) ($leveringen->first()->AantalAanwezig ?? 0);
+
+        $verwachteLevering = $leveringen
+            ->map(fn ($row) => $row->DatumEerstVolgendeLevering)
+            ->filter()
+            ->first();
+
+        if (!$verwachteLevering && $leveringen->isNotEmpty()) {
+            $verwachteLevering = $leveringen->last()->DatumEerstVolgendeLevering;
+        }
+
         return view('product.leverantieInfo', [
-            'title' => 'Leverantie Informatie'
+            'title' => 'Levering Informatie',
+            'leverancier' => $leverancier,
+            'leveringen' => $leveringen,
+            'productNaam' => $productNaam,
+            'toonFallback' => $aantalAanwezig <= 0,
+            'verwachteLevering' => $verwachteLevering,
         ]);
     }
 

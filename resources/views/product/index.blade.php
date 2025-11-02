@@ -1,63 +1,71 @@
-@vite(['resources/css/app.css', 'resources/js/app.js']);
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jamin</title>
+    <title>{{ $title }}</title>
 </head>
 <body>
-    <div class="container d-flex justify-content-center">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h1 class="mb-4">{{ $title }}</h1>
 
-        <div class="col-md-9">
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Sluiten"></button>
+                    </div>
+                    <meta http-equiv="refresh" content="3;url={{ route('product.index') }}">
+                @endif
 
-            <h1>{{ $title }}</h1>
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Sluiten"></button>
+                    </div>
+                @endif
 
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" aria-label="sluiten" data-bs-dismiss="alert"></button>
-                </div>
-                <meta http-equiv="refresh" content="3;url={{ route('product.index') }}">
-            @endif
-
-        
-            <table class="table table-striped table-bordered table-hover mt-4 align-middle shadow-sm">
-                <thead>
-                    <th>Barcode</th>
-                    <th>Naam</th>
-                    <th class="text-center">Verpakkingseenheid (kg)</th>
-                    <th class="text-center">Aantal Aanwezig</th>
-                    <th class="text-center">Allergenen Info</th>
-                    <th class="text-center">Leverantie Info</th>
-                </thead>
-                <tbody>
-                    @forelse ($products as $product)
+                <table class="table table-striped table-bordered align-middle shadow-sm">
+                    <thead class="table-light">
                         <tr>
-                            <td>{{ $product->Barcode }}</td>
-                            <td>{{ $product->Naam }}</td>
-                            <td class="text-center">{{ $product->VerpakkingsEenheid }}</td>
-                            <td class="text-center">{{ $product->AantalAanwezig }}</td>
-                            <td class="text-center">
-                                <form action="{{ route('product.allergenenInfo', $product->Id) }}" method="POST">
-                                    @csrf
-                                    @method('GET')
-                                    <button type="submit" class="btn btn-danger btn-sm">Allergenen Info</button>
-                                </form>
-                            </td>
-                            <td class="text-center">
-                                <form action="{{ route('product.leverantieInfo', $product->Id) }}" method="POST">
-                                    @csrf
-                                    @method('GET')
-                                    <button type="submit" class="btn btn-success btn-sm">Leverantie Info</button>
-                                </form>
-                            </td>
+                            <th scope="col">Barcode</th>
+                            <th scope="col">Naam</th>
+                            <th scope="col" class="text-center">Verpakkingseenheid (kg)</th>
+                            <th scope="col" class="text-center">Aantal aanwezig</th>
+                            <th scope="col" class="text-center">Allergenen info</th>
+                            <th scope="col" class="text-center">Leverantie info</th>
                         </tr>
-                    @empty
-                        <tr colspan='3'>Geen allergenen bekent</tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @forelse ($products as $product)
+                            <tr>
+                                <td>{{ $product->Barcode }}</td>
+                                <td>{{ $product->Naam }}</td>
+                                <td class="text-center">{{ number_format((float) $product->VerpakkingsEenheid, 1) }}</td>
+                                <td class="text-center">
+                                    {{ is_null($product->AantalAanwezig) ? 'Onbekend' : $product->AantalAanwezig }}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ route('product.allergenenInfo', $product->Id) }}" class="btn btn-outline-danger btn-sm" title="Bekijk allergenen">
+                                        &times;
+                                    </a>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ route('product.leverantieInfo', $product->Id) }}" class="btn btn-outline-primary btn-sm" title="Bekijk leverantie">
+                                        ?
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">Geen producten gevonden.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
